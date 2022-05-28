@@ -1,5 +1,5 @@
 {
-  "name": "fluent-ffmpeg",
+  "name": "@yuwade/fluent-ffmpeg",
   "version": "2.1.2",
   "description": "A fluent API to FFMPEG (http://www.ffmpeg.org)",
   "keywords": [
