@@ -81,6 +81,65 @@ var command = ffmpeg({ option: "value", ... });
 var command = ffmpeg('/path/to/file.avi', { option: "value", ... });
 ```
 
+### add 
+**.addInput(show_vidoe, "show_vidoe")**
+**ffEntity.getInputAlias()**
+
+**complexFilter children**
+
+```javascript
+ let ffEntity = ffmpeg();
+  ffEntity
+    .addInput(show_vidoe, "show_vidoe")
+    .addInput(overlay_main, "overlay_main")
+    .addInput(bg_main, "bg_mian")
+    .addInput(bgm_audio, "bgm_audio")
+    .complexFilter([
+      {
+        inputs: [ffEntity.getInputAlias("bg_mian")],
+        filter: "scale",
+        options: "1920:1080",
+        outputs: "bg",
+      },
+      {
+        inputs: [ffEntity.getInputAlias("show_vidoe")],
+        filter: "crop",
+        options: "720:540:0:330",
+        children: ["scale=1440:1080"],
+        outputs: "bgm",
+      },
+
+      {
+        inputs: [ffEntity.getInputAlias("overlay_main")],
+        filter: "setpts",
+        options: `${(70 / main_duration).toFixed(3)}*PTS`,
+        children: ["scale=1440:940"],
+        outputs: "overlay_main",
+      },
+      {
+        inputs: [ffEntity.getInputAlias("bgm_audio")],
+        filter: "volume",
+        options: {
+          enable:'between(t,5,8)',
+          volume:0
+        },
+      },
+      {
+        inputs: ["bgm", "overlay_main"],
+        filter: "overlay",
+        options: { y: "150", shortest: 1 },
+        outputs: "base1",
+      },
+
+      {
+        inputs: ["bg", "base1"],
+        filter: "overlay",
+        options: { x: "240" },
+      },
+    ])
+
+```
+
 The following options are available:
 * `source`: input file name or readable stream (ignored if an input file is passed to the constructor)
 * `timeout`: ffmpeg timeout in seconds (defaults to no timeout)
